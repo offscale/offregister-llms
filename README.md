@@ -24,12 +24,66 @@ Support matrix:
 | [gpt-neox](https://github.com/EleutherAI/gpt-neox) | 20B        | Apache-2.0 | ❌       |
 
 ## Install dependencies
-
-    pip install -r requirements.txt
+```sh
+$ python -m pip install -r requirements.txt
+```
 
 ## Install package
+```sh
+$ python -m pip install -e .
+```
 
-    pip install .
+## Virtual test environment environment
+```sh
+$ vagrant init generic/rocky8
+$ vagrant up
+$ vagrant ssh-config  # Use this in next step, first update ~/.ssh/config and set name to 'rocky'
+```
+
+(or use any other Rocky Linux 8 installation you have, e.g., within your favourite cloud vendor)
+
+Then enable usage in `offregister` by making this node known to your `etcd` cluster:
+```sh
+# You'll need `etcd` running in background for this command:
+$ python -m offset --os 'fedora' -u 'vagrant' --dns-name 'rocky' -n 'rocky' \
+                   -i "$PWD"'/.vagrant/machines/default/virtualbox/private_key'
+```
+
+## Install LLM dependencies using this python package's logic:
+```sh
+# You'll need `etcd` running in background for this command:
+$ python -m offregister -c 'register.llm.json'  # register.llm.json is a default offregister config; see below
+```
+
+### `register.llm.json` example
+Make sure you set `OFFAUTH_JSON` environment variable to your https://github.com/offscale/offregister/blob/master/offregister/_config/auth.sample.json
+```json
+{
+  "name": "llm",
+  "description": "Offregister strategy for Large Language Models",
+  "version": "0.0.1",
+  "provider": {
+    "$ref": "env:OFFAUTH_JSON|offutils.str_from_file | json.loads"
+  },
+  "register": {
+    "/unclustered/rocky": [
+      {
+        "module": "offregister-bootstrap",
+        "type": "fabric"
+      },
+      {
+        "module": "offregister-llms",
+        "type": "fabric"
+      }
+    ]
+  },
+  "purpose": [
+    "llm"
+  ],
+  "etcd_server": "http://localhost:2379",
+  "default_pick": "first"
+}
+```
 
 ## License
 
