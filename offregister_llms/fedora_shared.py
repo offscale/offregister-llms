@@ -12,10 +12,30 @@ def llm_dependencies(c):
     :param c: Connection
     :type c: ```fabric.connection.Connection```
     """
-    repo = "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo"
-    if not c.run("yum repolist cuda-rhel8-x86_64 --enabled", hide=True).stdout:
-        c.sudo("dnf config-manager --add-repo {repo}".format(repo=repo))
-        c.sudo("dnf clean all")
+    repo_name = "docker-ce"
+    repo = "dnf config-manager --add-repo https://download.docker.com/linux/centos/{repo_name}.repo".format(
+        repo_name=repo_name
+    )
+    cleaned = False
+
+    for repo, repo_name in (
+        (repo, repo_name),
+        (
+            "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo",
+            "cuda-rhel8-x86_64",
+        ),
+    ):
+        if not c.run(
+            "yum repolist {repo_name} --enabled".format(repo_name=repo_name), hide=True
+        ).stdout:
+            c.sudo("dnf config-manager --add-repo {repo}".format(repo=repo))
+            if cleaned is False:
+                c.sudo("dnf clean all")
+                cleaned = True
+    dnf_depends(
+        c, "docker-ce", "docker-ce-cli", "containerd.io", "docker-compose-plugin"
+    )
+
     if (
         c.run(
             "dnf module list --quiet --enabled nvidia-driver", hide=True, warn=True
