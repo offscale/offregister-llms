@@ -34,15 +34,29 @@ $ python -m pip install -e .
 ```
 
 ## Virtual test environment environment
+
+### [`offstrategy`](https://github.com/offscale/offstrategy)
 ```sh
-$ vagrant init generic/rocky8
-$ vagrant up
-$ vagrant ssh-config  # Use this in next step, first update ~/.ssh/config and set name to 'rocky'
+# JSON file describing Node to create and auth you can base off https://github.com/offscale/offstrategy/blob/master/offstrategy/config/strategy.ubuntu.aws.json
+$ python -m offstrategy -n 1 --provider 'EC2' -c 'strategy.ubuntu.aws.json'
+# `python -m offswitch -s 'strategy.ubuntu.aws.json'` will delete the VM
 ```
 
-(or use any other Rocky Linux 8 installation you have, e.g., within your favourite cloud vendor)
+### Vagrant
+```sh
+$ vagrant init generic/rocky8
+$ vagrant up  # turn off VM with `vagrant halt`
+$ vagrant ssh-config  # Use this in next step, first update ~/.ssh/config and set name to 'rocky'
+$ # `vagrant destroy` will delete the VM
+```
 
-Then enable usage in `offregister` by making this node known to your `etcd` cluster:
+See Bring Your Own Node (BYON) section below for how to make this available to [`offregister`](https://github.com/offscale/offregister).
+
+### Other (BYON)
+
+Use any [Rocky Linux](https://rockylinux.org) 8 installation.
+
+Then enable usage in `offregister` by making this node known to your [`etcd`](https://etcd.io) cluster:
 ```sh
 # You'll need `etcd` running in background for this command:
 $ python -m offset --os 'fedora' -u 'vagrant' --dns-name 'rocky' -n 'rocky' \
