@@ -21,7 +21,8 @@ Support matrix:
 | Name + repo                                        | Params (#) | License    | Support |
 |----------------------------------------------------|------------|------------|---------|
 | [YaLM-100B](https://github.com/yandex/YaLM-100B)   | 100B       | Apache-2.0 | WiP     |
-| [gpt-neox](https://github.com/EleutherAI/gpt-neox) | 20B        | Apache-2.0 | ❌       |
+| [gpt-neox](https://github.com/EleutherAI/gpt-neox) | 20B        | Apache-2.0 | ❌      |
+| [FLAN](https://github.com/google-research/FLAN/tree/main/flan/v2) | 540B [flan-t5-xxl](https://huggingface.co/google/flan-t5-xxl)       | Apache-2.0 | ❌      |
 
 ## Install dependencies
 ```sh
